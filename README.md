@@ -99,39 +99,24 @@ Then navigate to `http://localhost:8000` in your browser.
 
 ### GitHub Pages
 
-This project is configured for automatic deployment to GitHub Pages using GitHub Actions.
+This project can be easily deployed to GitHub Pages with just a few clicks!
 
-**⚠️ Important: You must enable GitHub Pages BEFORE running the workflow!**
-
-1. **Enable GitHub Pages** (Choose one method):
-   
-   **Option A - Deploy from branch (Recommended for this workflow):**
+1. **Enable GitHub Pages**:
    - Go to your repository on GitHub: `https://github.com/razzaq94/Barberchop-ganttchart`
-   - Click on **Settings** → **Pages**
+   - Click on **Settings** → **Pages** (in the left sidebar)
    - Under **Source**, select **Deploy from a branch**
-   - Select branch: **gh-pages** (this will be created automatically by the workflow)
+   - Select branch: **main** (or **master** if that's your default branch)
    - Select folder: **/ (root)**
    - Click **Save**
-   
-   **Option B - GitHub Actions:**
-   - Go to **Settings** → **Pages**
-   - Under **Source**, select **GitHub Actions**
-   - The workflow will deploy automatically
 
-2. **Push your code to GitHub** (if not already done):
-   ```bash
-   git add .
-   git commit -m "Add GitHub Pages deployment"
-   git push origin main
-   ```
+2. **That's it!** Your site will be live in a few seconds at:
+   - `https://razzaq94.github.io/Barberchop-ganttchart`
 
-3. **Automatic Deployment**:
-   - After enabling Pages and pushing, the workflow will run automatically
-   - Go to the **Actions** tab in your repository to monitor deployment status
-   - Wait for the workflow to complete (you'll see a green checkmark)
-   - Your site will be live at: `https://razzaq94.github.io/Barberchop-ganttchart`
+3. **Automatic Updates**:
+   - Every time you push changes to the `main` branch, GitHub Pages will automatically update
+   - Changes typically appear within 1-2 minutes
 
-**Troubleshooting**: If you see an error about Pages not being enabled, make sure you completed step 1 above and selected "GitHub Actions" as the source.
+**Note**: The GitHub Actions workflow (`.github/workflows/deploy.yml`) is optional and can be used if you prefer deploying to a separate `gh-pages` branch. For simple static sites, deploying directly from the main branch is the easiest approach.
 
 ## 📁 Project Structure
 
