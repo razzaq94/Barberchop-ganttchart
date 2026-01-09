@@ -392,9 +392,6 @@
         const DATA_FILE_PATH = 'data.json';
         
         // GitHub API configuration
-        // Default token (will be visible in source code - security warning)
-        const DEFAULT_GITHUB_TOKEN = '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';
-        
         let githubConfig = {
             token: '',
             owner: 'razzaq94',
@@ -403,15 +400,9 @@
 
         // Load GitHub configuration
         function loadGitHubConfig() {
-            // Load from localStorage, or use default token if not set
-            githubConfig.token = localStorage.getItem(GITHUB_TOKEN_KEY) || DEFAULT_GITHUB_TOKEN;
+            githubConfig.token = localStorage.getItem(GITHUB_TOKEN_KEY) || '';
             githubConfig.owner = localStorage.getItem(GITHUB_OWNER_KEY) || 'razzaq94';
             githubConfig.repo = localStorage.getItem(GITHUB_REPO_KEY) || 'Barberchop-ganttchart';
-            
-            // If using default token and not in localStorage, save it
-            if (!localStorage.getItem(GITHUB_TOKEN_KEY) && DEFAULT_GITHUB_TOKEN) {
-                localStorage.setItem(GITHUB_TOKEN_KEY, DEFAULT_GITHUB_TOKEN);
-            }
             
             // Update UI
             document.getElementById('githubToken').value = githubConfig.token;
