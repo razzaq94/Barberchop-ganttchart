@@ -60,7 +60,7 @@ A dynamic, interactive Gantt chart application for managing project tasks with a
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/Barberchop-ganttchart.git
+   git clone https://github.com/razzaq94/Barberchop-ganttchart.git
    cd Barberchop-ganttchart
    ```
 
@@ -117,7 +117,7 @@ This project is configured for automatic deployment to GitHub Pages using GitHub
 3. **Automatic Deployment**:
    - The workflow (`.github/workflows/deploy.yml`) will automatically deploy on every push to `main` or `master` branch
    - Check the **Actions** tab to monitor deployment status
-   - Your site will be live at: `https://[your-username].github.io/[repository-name]`
+   - Your site will be live at: `https://razzaq94.github.io/Barberchop-ganttchart`
 
 ## 📁 Project Structure
 
@@ -180,4 +180,4 @@ Created for the Barberchop project task management.
 
 ---
 
-**Live Demo**: [View on GitHub Pages](https://your-username.github.io/Barberchop-ganttchart) (update with your actual GitHub Pages URL)
+**Live Demo**: [View on GitHub Pages](https://razzaq94.github.io/Barberchop-ganttchart)
