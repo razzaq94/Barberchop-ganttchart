@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barberchop Gantt Chart</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            padding: 20px;
+            background: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .form-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group input, .form-group select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .gantt-container {
+            overflow-x: auto;
+            padding: 20px;
+        }
+
+        .gantt-chart {
+            min-width: 100%;
+            position: relative;
+        }
+
+        .timeline-header {
+            display: flex;
+            border-bottom: 2px solid #333;
+            margin-bottom: 10px;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+
+        .task-column {
+            min-width: 200px;
+            border-right: 1px solid #ddd;
+            padding: 10px;
+            font-weight: bold;
+            background: #f9f9f9;
+        }
+
+        .date-column {
+            min-width: 100px;
+            text-align: center;
+            padding: 10px 5px;
+            border-right: 1px solid #ddd;
+            font-size: 11px;
+            background: #f9f9f9;
+        }
+
+        .timeline-body {
+            position: relative;
+        }
+
+        .task-row {
+            display: flex;
+            min-height: 60px;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+        }
+
+        .task-info {
+            min-width: 200px;
+            padding: 10px;
+            border-right: 1px solid #ddd;
+            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .task-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .task-owner {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .task-bar-container {
+            flex: 1;
+            position: relative;
+            height: 100%;
+            min-height: 60px;
+        }
+
+        .task-bar {
+            position: absolute;
+            height: 40px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .task-bar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .task-bar.backend {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .task-bar.mobile {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .date-marker {
+            position: absolute;
+            top: 0;
+            width: 1px;
+            height: 100%;
+            background: rgba(0,0,0,0.1);
+            z-index: 1;
+        }
+
+        .stats {
+            padding: 20px;
+            background: #f5f5f5;
+            border-top: 2px solid #ddd;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            padding: 4px 8px;
+            font-size: 10px;
+            margin-left: 10px;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Barberchop Gantt Chart</h1>
+            <p>Dynamic Task Management with Automatic Shifting</p>
+        </div>
+
+        <div class="controls">
+            <h3>Add New Task</h3>
+            <div class="form-group">
+                <input type="text" id="taskName" placeholder="Task Name" required>
+                <select id="taskOwner" required>
+                    <option value="">Select Owner</option>
+                    <option value="Backend">Backend</option>
+                    <option value="Mobile">Mobile</option>
+                </select>
+                <input type="date" id="startDate" required>
+                <input type="number" id="duration" placeholder="Duration (days)" min="1" required>
+                <small style="grid-column: 1 / -1; color: #666; font-size: 12px;">Note: Chart displays in weeks, but duration is still entered in days</small>
+                <button onclick="addTask()">Add Task</button>
+            </div>
+        </div>
+
+        <div class="gantt-container">
+            <div class="gantt-chart" id="ganttChart">
+                <!-- Gantt chart will be generated here -->
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-label">Total Tasks</div>
+                <div class="stat-value" id="totalTasks">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Project End Date</div>
+                <div class="stat-value" id="endDate">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Backend Tasks</div>
+                <div class="stat-value" id="backendTasks">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Mobile Tasks</div>
+                <div class="stat-value" id="mobileTasks">0</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tasks = [
+            { id: 1, name: "MongoDB optimization", owner: "Backend", startDate: "2026-01-05", endDate: "2026-01-30", duration: 26 },
+            { id: 2, name: "Mobile app Improvements", owner: "Mobile", startDate: "2026-01-06", endDate: "2026-01-30", duration: 25 },
+            { id: 3, name: "BarberChop 1 backend rework", owner: "Backend", startDate: "2026-02-01", endDate: "2026-03-20", duration: 48 },
+            { id: 4, name: "BarberChop 1 backend update release", owner: "Mobile", startDate: "2026-03-09", endDate: "2026-03-27", duration: 19 },
+            { id: 5, name: "BarberChop 2 Pictures modes implementation", owner: "Mobile", startDate: "2026-02-01", endDate: "2026-02-10", duration: 10 }
+        ];
+
+        let nextId = 6;
+
+        function parseDate(dateString) {
+            return new Date(dateString + 'T00:00:00');
+        }
+
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        function addDays(date, days) {
+            const result = new Date(date);
+            result.setDate(result.getDate() + days);
+            return result;
+        }
+
+        function calculateEndDate(startDate, duration) {
+            return addDays(parseDate(startDate), duration - 1);
+        }
+
+        function insertTask(newTask) {
+            const newStartDate = parseDate(newTask.startDate);
+            const newEndDate = calculateEndDate(newTask.startDate, newTask.duration);
+            
+            // Separate tasks by owner
+            const backendTasks = tasks.filter(t => t.owner === "Backend").sort((a, b) => 
+                parseDate(a.startDate) - parseDate(b.startDate)
+            );
+            const mobileTasks = tasks.filter(t => t.owner === "Mobile").sort((a, b) => 
+                parseDate(a.startDate) - parseDate(b.startDate)
+            );
+
+            // Find where to insert the new task
+            let affectedTasks = [];
+            if (newTask.owner === "Backend") {
+                affectedTasks = backendTasks.filter(t => 
+                    parseDate(t.startDate) >= newStartDate
+                );
+            } else {
+                affectedTasks = mobileTasks.filter(t => 
+                    parseDate(t.startDate) >= newStartDate
+                );
+            }
+
+            // Shift affected tasks
+            if (affectedTasks.length > 0) {
+                const shiftAmount = newTask.duration;
+                affectedTasks.forEach(task => {
+                    const currentStart = parseDate(task.startDate);
+                    const newStart = addDays(currentStart, shiftAmount);
+                    task.startDate = formatDate(newStart);
+                    task.endDate = formatDate(calculateEndDate(task.startDate, task.duration));
+                });
+            }
+
+            // Add the new task
+            tasks.push(newTask);
+            
+            // Recalculate all tasks to handle overlaps and extend deadlines
+            recalculateTimeline();
+        }
+
+        function recalculateTimeline() {
+            // Separate by owner and sort
+            const backendTasks = tasks.filter(t => t.owner === "Backend")
+                .map(t => ({ ...t, start: parseDate(t.startDate), end: calculateEndDate(t.startDate, t.duration) }))
+                .sort((a, b) => a.start - b.start);
+            
+            const mobileTasks = tasks.filter(t => t.owner === "Mobile")
+                .map(t => ({ ...t, start: parseDate(t.startDate), end: calculateEndDate(t.startDate, t.duration) }))
+                .sort((a, b) => a.start - b.start);
+
+            // Resolve overlaps within each team
+            resolveOverlaps(backendTasks);
+            resolveOverlaps(mobileTasks);
+
+            // Update original tasks array
+            [...backendTasks, ...mobileTasks].forEach(task => {
+                const original = tasks.find(t => t.id === task.id);
+                if (original) {
+                    original.startDate = formatDate(task.start);
+                    original.endDate = formatDate(task.end);
+                    original.duration = Math.ceil((task.end - task.start) / (1000 * 60 * 60 * 24)) + 1;
+                }
+            });
+        }
+
+        function resolveOverlaps(sortedTasks) {
+            for (let i = 1; i < sortedTasks.length; i++) {
+                const prev = sortedTasks[i - 1];
+                const curr = sortedTasks[i];
+                
+                if (curr.start <= prev.end) {
+                    // Overlap detected, shift current task
+                    curr.start = addDays(prev.end, 1);
+                    curr.end = addDays(curr.start, curr.duration - 1);
+                }
+            }
+        }
+
+        function addTask() {
+            const taskName = document.getElementById('taskName').value;
+            const taskOwner = document.getElementById('taskOwner').value;
+            const startDate = document.getElementById('startDate').value;
+            const duration = parseInt(document.getElementById('duration').value);
+
+            if (!taskName || !taskOwner || !startDate || !duration) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            const endDate = calculateEndDate(startDate, duration);
+            
+            const newTask = {
+                id: nextId++,
+                name: taskName,
+                owner: taskOwner,
+                startDate: startDate,
+                endDate: formatDate(endDate),
+                duration: duration
+            };
+
+            insertTask(newTask);
+            renderGantt();
+            updateStats();
+
+            // Reset form
+            document.getElementById('taskName').value = '';
+            document.getElementById('taskOwner').value = '';
+            document.getElementById('startDate').value = '';
+            document.getElementById('duration').value = '';
+        }
+
+        function deleteTask(id) {
+            if (confirm('Are you sure you want to delete this task?')) {
+                tasks = tasks.filter(t => t.id !== id);
+                recalculateTimeline();
+                renderGantt();
+                updateStats();
+            }
+        }
+
+        function getDateRange() {
+            if (tasks.length === 0) return { start: new Date(), end: new Date() };
+            
+            let minDate = parseDate(tasks[0].startDate);
+            let maxDate = parseDate(tasks[0].endDate);
+
+            tasks.forEach(task => {
+                const start = parseDate(task.startDate);
+                const end = parseDate(task.endDate);
+                if (start < minDate) minDate = start;
+                if (end > maxDate) maxDate = end;
+            });
+
+            return { start: minDate, end: maxDate };
+        }
+
+        function getDaysBetween(start, end) {
+            return Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+        }
+
+        function getDayOffset(date, startDate) {
+            return Math.ceil((date - startDate) / (1000 * 60 * 60 * 24));
+        }
+
+        function getWeekStart(date) {
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust to Monday
+            return new Date(d.setDate(diff));
+        }
+
+        function getWeeksBetween(start, end) {
+            const weekStart = getWeekStart(start);
+            const weekEnd = getWeekStart(end);
+            const diffTime = weekEnd - weekStart;
+            const diffWeeks = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 7));
+            return Math.max(1, diffWeeks + 1);
+        }
+
+        function getWeekOffset(date, startDate) {
+            const weekStart = getWeekStart(startDate);
+            const taskWeekStart = getWeekStart(date);
+            const diffTime = taskWeekStart - weekStart;
+            return Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7));
+        }
+
+        function formatWeekLabel(weekStart) {
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const startMonth = monthNames[weekStart.getMonth()];
+            const endMonth = monthNames[weekEnd.getMonth()];
+            if (startMonth === endMonth) {
+                return `${startMonth} ${weekStart.getDate()}-${weekEnd.getDate()}`;
+            } else {
+                return `${startMonth} ${weekStart.getDate()}-${endMonth} ${weekEnd.getDate()}`;
+            }
+        }
+
+        function renderGantt() {
+            const container = document.getElementById('ganttChart');
+            container.innerHTML = '';
+
+            if (tasks.length === 0) {
+                container.innerHTML = '<p style="padding: 20px; text-align: center; color: #666;">No tasks yet. Add a task to get started!</p>';
+                return;
+            }
+
+            const dateRange = getDateRange();
+            const totalWeeks = getWeeksBetween(dateRange.start, dateRange.end);
+            const weekWidth = 100;
+            const weekStart = getWeekStart(dateRange.start);
+
+            // Create timeline header
+            const timelineHeader = document.createElement('div');
+            timelineHeader.className = 'timeline-header';
+            
+            const taskColumn = document.createElement('div');
+            taskColumn.className = 'task-column';
+            taskColumn.textContent = 'Task';
+            timelineHeader.appendChild(taskColumn);
+
+            // Generate week columns
+            const currentWeekStart = new Date(weekStart);
+            for (let i = 0; i < totalWeeks; i++) {
+                const dateCol = document.createElement('div');
+                dateCol.className = 'date-column';
+                dateCol.style.width = weekWidth + 'px';
+                dateCol.textContent = formatWeekLabel(new Date(currentWeekStart));
+                timelineHeader.appendChild(dateCol);
+                currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+            }
+
+            container.appendChild(timelineHeader);
+
+            // Create timeline body
+            const timelineBody = document.createElement('div');
+            timelineBody.className = 'timeline-body';
+
+            // Sort tasks by start date
+            const sortedTasks = [...tasks].sort((a, b) => 
+                parseDate(a.startDate) - parseDate(b.startDate)
+            );
+
+            sortedTasks.forEach(task => {
+                const taskRow = document.createElement('div');
+                taskRow.className = 'task-row';
+
+                // Task info column
+                const taskInfo = document.createElement('div');
+                taskInfo.className = 'task-info';
+                taskInfo.innerHTML = `
+                    <span class="task-name">${task.name}</span>
+                    <span class="task-owner">${task.owner}</span>
+                `;
+                taskRow.appendChild(taskInfo);
+
+                // Task bar container
+                const taskBarContainer = document.createElement('div');
+                taskBarContainer.className = 'task-bar-container';
+                taskBarContainer.style.width = (totalWeeks * weekWidth) + 'px';
+
+                // Add week markers
+                const currentWeekStart = new Date(weekStart);
+                for (let i = 0; i < totalWeeks; i++) {
+                    const marker = document.createElement('div');
+                    marker.className = 'date-marker';
+                    marker.style.left = (i * weekWidth) + 'px';
+                    taskBarContainer.appendChild(marker);
+                    currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+                }
+
+                // Task bar - calculate position based on weeks
+                const taskStart = parseDate(task.startDate);
+                const taskEnd = parseDate(task.endDate);
+                const taskDays = getDaysBetween(taskStart, taskEnd);
+                const weekOffset = getWeekOffset(taskStart, dateRange.start);
+                const leftOffset = weekOffset * weekWidth;
+                // Calculate width: if task spans multiple weeks, use proportional width
+                const taskWeekStart = getWeekStart(taskStart);
+                const taskWeekEnd = getWeekStart(taskEnd);
+                const weeksSpanned = Math.max(1, Math.ceil((taskEnd - taskWeekStart) / (1000 * 60 * 60 * 24 * 7)));
+                const width = weeksSpanned * weekWidth;
+
+                const taskBar = document.createElement('div');
+                taskBar.className = `task-bar ${task.owner.toLowerCase()}`;
+                taskBar.style.left = leftOffset + 'px';
+                taskBar.style.width = width + 'px';
+                taskBar.textContent = task.name;
+                taskBar.title = `${task.name} (${task.startDate} to ${task.endDate}, ${task.duration} days)`;
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.textContent = '×';
+                deleteBtn.onclick = () => deleteTask(task.id);
+                taskBar.appendChild(deleteBtn);
+
+                taskBarContainer.appendChild(taskBar);
+                taskRow.appendChild(taskBarContainer);
+
+                timelineBody.appendChild(taskRow);
+            });
+
+            container.appendChild(timelineBody);
+        }
+
+        function updateStats() {
+            document.getElementById('totalTasks').textContent = tasks.length;
+            document.getElementById('backendTasks').textContent = tasks.filter(t => t.owner === 'Backend').length;
+            document.getElementById('mobileTasks').textContent = tasks.filter(t => t.owner === 'Mobile').length;
+
+            if (tasks.length > 0) {
+                const dateRange = getDateRange();
+                document.getElementById('endDate').textContent = formatDate(dateRange.end);
+            } else {
+                document.getElementById('endDate').textContent = '-';
+            }
+        }
+
+        // Initialize
+        recalculateTimeline();
+        renderGantt();
+        updateStats();
+    </script>
+</body>
+</html>
