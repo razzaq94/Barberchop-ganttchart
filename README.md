@@ -15,6 +15,9 @@ A dynamic, interactive Gantt chart application for managing project tasks with a
 - **Smart Conflict Resolution**: Automatically resolves overlaps within each team's timeline
 - **Task Management**: Add, view, and delete tasks with ease
 - **Real-time Statistics**: Track total tasks, project end date, and team-specific task counts
+- **Automatic Local Storage**: All changes are automatically saved to your browser
+- **☁️ Cloud Sync**: Sync data across all devices using GitHub API
+- **Export/Import**: Backup and restore your data as JSON files
 - **Responsive Design**: Modern, gradient-based UI with smooth animations
 - **No Dependencies**: Pure HTML, CSS, and JavaScript - no frameworks required
 
@@ -47,6 +50,28 @@ A dynamic, interactive Gantt chart application for managing project tasks with a
 
 - Click the **×** button on any task bar to remove it
 - The timeline will automatically recalculate after deletion
+
+### Cloud Sync (GitHub)
+
+Access your data from anywhere with automatic cloud synchronization:
+
+1. **Setup Cloud Sync**:
+   - Create a GitHub Personal Access Token at [github.com/settings/tokens](https://github.com/settings/tokens)
+   - Select **repo** scope when creating the token
+   - Enter your token, repository owner, and repository name in the Cloud Sync section
+   - Click **Test Connection** to verify
+
+2. **Automatic Sync**:
+   - Once configured, all changes automatically sync to GitHub
+   - Data is saved to `data.json` in your repository
+   - Access your data from any device by loading from cloud
+
+3. **Manual Sync**:
+   - **Sync Now**: Manually push your current data to GitHub
+   - **Load from Cloud**: Pull the latest data from GitHub
+   - Useful when working on multiple devices
+
+**Note**: Your GitHub token is stored locally in your browser and never sent to any third-party servers.
 
 ## 🛠️ Technology Stack
 
