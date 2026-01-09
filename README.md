@@ -103,13 +103,20 @@ This project is configured for automatic deployment to GitHub Pages using GitHub
 
 **⚠️ Important: You must enable GitHub Pages BEFORE running the workflow!**
 
-1. **Enable GitHub Pages FIRST** (This is required before the workflow can run):
+1. **Enable GitHub Pages** (Choose one method):
+   
+   **Option A - Deploy from branch (Recommended for this workflow):**
    - Go to your repository on GitHub: `https://github.com/razzaq94/Barberchop-ganttchart`
-   - Click on **Settings** (top menu of your repository)
-   - Scroll down and click **Pages** in the left sidebar
-   - Under **Source**, select **GitHub Actions** (NOT "Deploy from a branch")
-   - Click **Save** (if there's a save button)
-   - **Important**: Make sure "GitHub Actions" is selected, not a branch name
+   - Click on **Settings** → **Pages**
+   - Under **Source**, select **Deploy from a branch**
+   - Select branch: **gh-pages** (this will be created automatically by the workflow)
+   - Select folder: **/ (root)**
+   - Click **Save**
+   
+   **Option B - GitHub Actions:**
+   - Go to **Settings** → **Pages**
+   - Under **Source**, select **GitHub Actions**
+   - The workflow will deploy automatically
 
 2. **Push your code to GitHub** (if not already done):
    ```bash
