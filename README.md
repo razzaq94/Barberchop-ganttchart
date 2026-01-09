@@ -101,23 +101,30 @@ Then navigate to `http://localhost:8000` in your browser.
 
 This project is configured for automatic deployment to GitHub Pages using GitHub Actions.
 
-1. **Push your code to GitHub** (if not already done):
+**⚠️ Important: You must enable GitHub Pages BEFORE running the workflow!**
+
+1. **Enable GitHub Pages FIRST** (This is required before the workflow can run):
+   - Go to your repository on GitHub: `https://github.com/razzaq94/Barberchop-ganttchart`
+   - Click on **Settings** (top menu of your repository)
+   - Scroll down and click **Pages** in the left sidebar
+   - Under **Source**, select **GitHub Actions** (NOT "Deploy from a branch")
+   - Click **Save** (if there's a save button)
+   - **Important**: Make sure "GitHub Actions" is selected, not a branch name
+
+2. **Push your code to GitHub** (if not already done):
    ```bash
    git add .
-   git commit -m "Initial commit"
+   git commit -m "Add GitHub Pages deployment"
    git push origin main
    ```
 
-2. **Enable GitHub Pages**:
-   - Go to your repository on GitHub
-   - Navigate to **Settings** → **Pages**
-   - Under **Source**, select **GitHub Actions**
-   - Save the changes
-
 3. **Automatic Deployment**:
-   - The workflow (`.github/workflows/deploy.yml`) will automatically deploy on every push to `main` or `master` branch
-   - Check the **Actions** tab to monitor deployment status
+   - After enabling Pages and pushing, the workflow will run automatically
+   - Go to the **Actions** tab in your repository to monitor deployment status
+   - Wait for the workflow to complete (you'll see a green checkmark)
    - Your site will be live at: `https://razzaq94.github.io/Barberchop-ganttchart`
+
+**Troubleshooting**: If you see an error about Pages not being enabled, make sure you completed step 1 above and selected "GitHub Actions" as the source.
 
 ## 📁 Project Structure
 
